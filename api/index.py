@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-import pandas as pd
 app = Flask(__name__)
 
 def process_string(data_str):
@@ -17,10 +16,22 @@ def process_string(data_str):
       balance = line[-11:].split('-')[1]
       losers["person"].append(player)
       losers["balance"].append(int(balance))
-  losers = pd.DataFrame(losers)
-  winners = pd.DataFrame(winners)
-  losers = losers.sort_values(by="balance", ascending=False).reset_index(drop=True)
-  winners = winners.sort_values(by="balance", ascending=False).reset_index(drop=True)
+
+  losers_combined = list(zip(losers["person"], losers["balance"]))
+  winners_combined = list(zip(winners["person"], winners["balance"]))
+
+  losers_sorted = sorted(losers_combined, key=lambda x: x[1], reverse=True)
+  winners_sorted = sorted(winners_combined, key=lambda x: x[1], reverse=True)
+
+  losers = {
+      "person": [person for person, _ in losers_sorted],
+      "balance": [balance for _, balance in losers_sorted],
+  }
+
+  winners = {
+      "person": [person for person, _ in winners_sorted],
+      "balance": [balance for _, balance in winners_sorted],
+  }
   return losers, winners
 
 def calculate_ledger(losers, winners):
@@ -29,28 +40,28 @@ def calculate_ledger(losers, winners):
   los_balance = losers["balance"][count_los]
   win_balance = winners["balance"][count_win]
   end_ledger = []
-  while count_los<len(losers) and count_win<len(winners):
+  while count_los<len(losers["person"]) and count_win<len(winners["person"]):
     result = los_balance - win_balance
     if result < 0:
       end_ledger.append(losers["person"][count_los] + ", " + str(los_balance/100) + " -> " + winners["person"][count_win])
       win_balance = win_balance - los_balance
       count_los += 1
-      if(count_los<len(losers)):
+      if(count_los<len(losers["balance"])):
         los_balance = losers["balance"][count_los]
     elif result > 0:
       end_ledger.append(losers["person"][count_los] + ", " + str(win_balance/100) + " -> " + winners["person"][count_win])
       los_balance = los_balance - win_balance
       count_win += 1
-      if(count_win<len(winners)):
+      if(count_win<len(winners["balance"])):
         win_balance = winners["balance"][count_win]
     else:
       end_ledger.append(losers["person"][count_los] + ", " + str(win_balance/100) + " -> " + winners["person"][count_win])
       count_los += 1
       count_win += 1
-      if(count_los<len(losers) and count_win<len(winners)):
+      if(count_los<len(losers["person"]) and count_win<len(winners["person"])):
         los_balance = losers["balance"][count_los]
         win_balance = winners["balance"][count_win]
-  if count_los != len(losers) or count_win != len(winners):
+  if count_los != len(losers["person"]) or count_win != len(winners["person"]):
     end_ledger.append("ledger doesn't check out")
 
   return end_ledger

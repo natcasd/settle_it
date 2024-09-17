@@ -25,3 +25,8 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+.outlined-text {
+  -webkit-text-stroke: 3px black; /* Sets a thick black outline */
+  color: transparent; /* Makes the fill color transparent */
+  border-radius: 8px; /* Adds rounded edges */
+}

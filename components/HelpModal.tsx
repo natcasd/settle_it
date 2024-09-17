@@ -7,7 +7,7 @@ import {
   ModalCloseButton,
   Text,
 } from "@chakra-ui/react";
-import ledger_example from "../../public/images/ledger_example.jpg";
+import ledger_example from "../public/images/ledger_example.jpg";
 import Image from "next/image";
 
 type HelpModalProps = {

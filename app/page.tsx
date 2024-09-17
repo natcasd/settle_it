@@ -14,6 +14,7 @@ export default function Home() {
   const [error, setError] = useState(false);
   const [copy, setCopy] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [ledgerBalanced, setLedgerBalanced] = useState(true);
 
   const handleSubmit = async () => {
     try {
@@ -32,6 +33,12 @@ export default function Home() {
       }
 
       const data = await response.json();
+      let ledger = data.ledger;
+      if (ledger.at(-1) === "ledger doesn't check out") {
+        setLedgerBalanced(false);
+        ledger.pop();
+      }
+      setLedger(ledger);
       setLedger(data.ledger);
     } catch (error) {
       console.error("Error:", error);
@@ -41,6 +48,7 @@ export default function Home() {
   const handleClear = () => {
     setInputText("");
     setLedger([]);
+    setLedgerBalanced(true);
   };
   const handleCopy = () => {
     const ledgerText = ledger.join("\n");
@@ -51,7 +59,7 @@ export default function Home() {
         setCopy(true);
         setTimeout(() => {
           setCopy(false);
-        }, 1750);
+        }, 1000);
       })
       .catch((error) => {
         console.error("Error copying ledger:", error);
@@ -62,11 +70,8 @@ export default function Home() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <Background />
       <Head>
-        <title>PokerNow Ledger Calculator </title>
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bungee+Tint&display=swap"
-          rel="stylesheet"
-        />
+        <title>settle.it</title>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
       </Head>
       <button
         className="z-10 absolute top-4 right-4 px-6 py-2 font-bold rounded-lg shadow-md border-2 border-black text-black bg-transparent hover:bg-gray-200 focus:outline-none transition duration-300 flex items-center space-x-1"
@@ -77,10 +82,7 @@ export default function Home() {
       </button>
       <HelpModal isOpen={isOpen} onClose={onClose} />
 
-      <h1
-        className="z-10 text-5xl sm:text-6xl md:text-6xl lg:text-6xl font-bold mb-8 text-center outlined-text"
-        style={{ fontFamily: "'Bungee Tint', sans-serif", fontWeight: 1000 }}
-      >
+      <h1 className="z-10 font-inter text-[2.65rem] sm:text-6xl md:text-6xl lg:text-6xl font-bold mb-8 text-center outlined-text">
         ♥️♠️ settle.it ♦️♣️
       </h1>
 
@@ -109,31 +111,41 @@ export default function Home() {
       </div>
 
       {ledger.length > 0 && (
-        <div className="z-10 mt-8 max-w-2xl">
-          <div className="bg-white p-4 rounded-lg shadow-md relative">
-            {copy ? (
-              <button
-                className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
-                onClick={handleCopy}
-                aria-label="Copy ledger to clipboard"
-                title="Copy ledger to clipboard"
-              >
-                <FaCheck />
-                <span>Copied!</span>
-              </button>
-            ) : (
-              <button
-                className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
-                onClick={handleCopy}
-                aria-label="Copy ledger to clipboard"
-                title="Copy ledger to clipboard"
-              >
-                <BsCopy />
-                <span>Copy ledger</span>
+        <div>
+          <div className="z-10 mt-8 max-w-2xl">
+            <div className="bg-white p-4 rounded-lg shadow-md relative">
+              {copy ? (
+                <button
+                  className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
+                  onClick={handleCopy}
+                  aria-label="Copy ledger to clipboard"
+                  title="Copy ledger to clipboard"
+                >
+                  <FaCheck />
+                  <span>copied!</span>
+                </button>
+              ) : (
+                <button
+                  className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
+                  onClick={handleCopy}
+                  aria-label="Copy ledger to clipboard"
+                  title="Copy ledger to clipboard"
+                >
+                  <BsCopy />
+                </button>
+              )}
+
+              <div className="whitespace-pre-wrap pb-6">
+                {ledger.join("\n")}
+              </div>
+            </div>
+          </div>
+          <div className="z-10">
+            {!ledgerBalanced && (
+              <button className="bg-pink-500 text-green-500 font-bold py-2 px-6 rounded">
+                ledger doesn't check out
               </button>
             )}
-
-            <div className="whitespace-pre-wrap pb-6">{ledger.join("\n")}</div>
           </div>
         </div>
       )}
