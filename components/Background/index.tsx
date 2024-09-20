@@ -101,8 +101,8 @@ const Background = () => {
   }, []);
   return (
     <div className="background">
-      {balls.map((ball) => (
-        <Ball {...ball} />
+      {balls.map((ball: BallProps, index: number) => (
+        <Ball key={index} {...ball} />
       ))}
     </div>
   );
