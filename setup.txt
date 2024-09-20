@@ -1,0 +1,1 @@
+To avoid errors with npm run dev run conda base. Downgraded to node.js version 18.1 to avoid serverless function size errors.

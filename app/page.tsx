@@ -17,6 +17,7 @@ export default function Home() {
   const [ledgerBalanced, setLedgerBalanced] = useState(true);
 
   const handleSubmit = async () => {
+    setLedgerBalanced(true);
     try {
       const response = await fetch("/api/calculate", {
         method: "POST",
@@ -113,40 +114,45 @@ export default function Home() {
       {ledger.length > 0 && (
         <div>
           <div className="z-10 mt-8 max-w-2xl">
-            <div className="bg-white p-4 rounded-lg shadow-md relative">
-              {copy ? (
-                <button
-                  className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
-                  onClick={handleCopy}
-                  aria-label="Copy ledger to clipboard"
-                  title="Copy ledger to clipboard"
-                >
-                  <FaCheck />
-                  <span>copied!</span>
-                </button>
-              ) : (
-                <button
-                  className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
-                  onClick={handleCopy}
-                  aria-label="Copy ledger to clipboard"
-                  title="Copy ledger to clipboard"
-                >
-                  <BsCopy />
-                </button>
-              )}
+            <div
+              className={
+                "bg-white p-4 rounded-lg shadow-md relative" +
+                (!ledgerBalanced ? " border border-red-500" : "")
+              }
+            >
+              {ledgerBalanced &&
+                (copy ? (
+                  <button
+                    className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
+                    onClick={handleCopy}
+                    aria-label="Copy ledger to clipboard"
+                    title="Copy ledger to clipboard"
+                  >
+                    <FaCheck />
+                    <span>copied!</span>
+                  </button>
+                ) : (
+                  <button
+                    className="absolute bottom-2 right-2 text-gray-600 hover:border-black focus:outline-none border border-gray-300 rounded p-1 text-sm flex items-center space-x-1"
+                    onClick={handleCopy}
+                    aria-label="Copy ledger to clipboard"
+                    title="Copy ledger to clipboard"
+                  >
+                    <BsCopy />
+                  </button>
+                ))}
 
               <div className="whitespace-pre-wrap pb-6">
                 {ledger.join("\n")}
               </div>
+              {!ledgerBalanced && (
+                <button className="bg-red-500 text-white font-bold py-1 px-2 rounded text-xs">
+                  ledger doesn't balance
+                </button>
+              )}
             </div>
           </div>
-          <div className="z-10">
-            {!ledgerBalanced && (
-              <button className="bg-pink-500 text-green-500 font-bold py-2 px-6 rounded">
-                ledger doesn't check out
-              </button>
-            )}
-          </div>
+          <div className="z-10"></div>
         </div>
       )}
     </div>
