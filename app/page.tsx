@@ -17,6 +17,7 @@ export default function Home() {
   const [ledgerBalanced, setLedgerBalanced] = useState(true);
 
   const handleSubmit = async () => {
+    setLedger([]);
     setLedgerBalanced(true);
     try {
       const response = await fetch("/api/calculate", {
@@ -31,16 +32,16 @@ export default function Home() {
           setError(false);
           setInputText("");
         }, 1000);
+      } else {
+        const data = await response.json();
+        let ledger = data.ledger;
+        if (ledger.at(-1) === "ledger doesn't check out") {
+          setLedgerBalanced(false);
+          ledger.pop();
+        }
+        setLedger(ledger);
+        setLedger(data.ledger);
       }
-
-      const data = await response.json();
-      let ledger = data.ledger;
-      if (ledger.at(-1) === "ledger doesn't check out") {
-        setLedgerBalanced(false);
-        ledger.pop();
-      }
-      setLedger(ledger);
-      setLedger(data.ledger);
     } catch (error) {
       console.error("Error:", error);
     }

@@ -38,7 +38,7 @@ def calculate_ledger(losers, winners):
   count_los = 0
   count_win = 0
   if len(losers["person"]) == 0 or len(losers["balance"]) == 0 or len(losers["person"]) == 0 or len(winners["balance"]) == 0:
-    return None
+    raise ValueError("wrong input")
   los_balance = losers["balance"][count_los]
   win_balance = winners["balance"][count_win]
   end_ledger = []
